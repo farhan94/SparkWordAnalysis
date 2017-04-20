@@ -6,5 +6,5 @@ jar=$2
 $SPARK_HOME/bin/spark-submit \
     --class $class \
     --master local[4] \
-    $jar
+    $jar file:///oh_theese_files/input/book/ file:///results
 
