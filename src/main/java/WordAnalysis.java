@@ -11,7 +11,6 @@ public class WordAnalysis {
     public static void main(String args[]){
         JavaSparkContext sc = new JavaSparkContext(new SparkConf().setAppName("Spark Word Analysis").setMaster("local[*]"));
         JavaRDD<String> lines = sc.textFile(args[0]);
-
         //remove empty, newlines, and null lines
         lines = lines.filter(new Function<String, Boolean>(){
             public Boolean call(String line){

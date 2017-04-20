@@ -4,4 +4,4 @@ docker run -it \
    -p 8042:8042 \
    -p 4040:4040 \
    -v "$(pwd):/oh_theese_files" \
-   sequenceiq/spark:1.6.0 /etc/bootstrap.sh bash
+   michaelmior/spark:2.0.0 /etc/bootstrap.sh bash
