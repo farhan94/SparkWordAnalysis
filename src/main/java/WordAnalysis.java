@@ -39,9 +39,15 @@ public class WordAnalysis {
             public Iterator<Tuple2<Tuple2<String, String>, Integer>> call(List<String> strings) throws Exception {
                 ArrayList<Tuple2<Tuple2<String, String>, Integer>> tups = new ArrayList<Tuple2<Tuple2<String, String>, Integer>>();
                 Iterator<String> stringsIterator1 = strings.iterator();
+                HashSet<String> usedW = new HashSet<String>();
                 while(stringsIterator1.hasNext()){
                     String key = stringsIterator1.next();
-                    if(key.isEmpty() || key.equals("\n") || key.equals(" ")){continue;}
+                    if(key.isEmpty() || key.equals("\n") || key.equals(" ")){
+                        continue;
+                    }
+                    if(usedW.add(key) == false){
+                        continue;
+                    }
                     Iterator<String> stringsIterator2 = strings.iterator();
                     int myword = 0;
                     while(stringsIterator2.hasNext()){
@@ -88,6 +94,7 @@ public class WordAnalysis {
 
         //Now we are trying to make it so that there is only one Key (the Context Word), but we want to make a map of Tuples for the Value, that contain the qword and count for it
         //this will help when we need to sort it later
+
         JavaPairRDD<String, TreeMap<String, Integer>> kv = reduced1.mapToPair(new PairFunction<Tuple2<Tuple2<String, String>, Integer>, String, TreeMap<String, Integer>>() {
             @Override
             public Tuple2<String, TreeMap<String, Integer>> call(Tuple2<Tuple2<String, String>, Integer> orig) throws Exception {
@@ -107,14 +114,14 @@ public class WordAnalysis {
 
                 Set<String> s2Keys = s2.keySet();
                 for(String key: s2Keys){
-                    if(s.containsKey(key)){
-                        int count = s.get(key);
-                        count += s2.get(key);
-                        s.replace(key, count);
-                    }
-                    else{
+//                    if(s.containsKey(key)){
+//                        int count = s.get(key);
+//                        count += s2.get(key);
+//                        s.replace(key, count);
+//                    }
+                    //else{
                         s.put(key, s2.get(key));
-                    }
+                   // }
                 }
                 return s;
             }
@@ -126,11 +133,11 @@ public class WordAnalysis {
             public String call(Tuple2<String, TreeMap<String, Integer>> orig) throws Exception {
                 TreeMap<String, Integer> queryWords = orig._2();
                 String allQW = "";
-                Set<String> keys =queryWords.navigableKeySet();
+                Set<String> keys = queryWords.navigableKeySet();
                 for(String key : keys){
                     allQW += "<"+key+", "+queryWords.get(key)+">\n";
                 }
-                return orig._1() + "\n" + allQW + "\n";
+                return orig._1() + "\n" + allQW;
             }
         });
         //now we want to sort by the key, so that when the textfile is created, it will be in sorted order.
