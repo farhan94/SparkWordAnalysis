@@ -10,7 +10,7 @@ public class WordAnalysis {
 
     public static void main(String args[]){
         JavaSparkContext sc = new JavaSparkContext(new SparkConf().setAppName("Spark Word Analysis").setMaster("local[*]"));
-        JavaRDD<String> lines = sc.textFile("/home/osboxes/hadoop-2.8.0/input/");
+        JavaRDD<String> lines = sc.textFile(args[0]);
 
         //remove empty, newlines, and null lines
         lines = lines.filter(new Function<String, Boolean>(){
@@ -81,17 +81,6 @@ public class WordAnalysis {
 
        // JavaPairRDD<Tuple2<String, String>, Integer> reduced2 = mapped.reduceByKey((ax,bx)-> ax + bx); //lambda expression for above code
 
-        //Now we are trying to make it so that there is only one Key (the Context Word), but we want to make a List of Tuples for the Value, that contain the qword and count for it
-        // we need to sort it later
-//        JavaPairRDD<String, String> kv = reduced1.mapToPair(new PairFunction<Tuple2<Tuple2<String, String>, Integer>, String, String>() {
-//            @Override
-//            public Tuple2<String, String> call(Tuple2<Tuple2<String, String>, Integer> orig) throws Exception {
-//
-//                Tuple2<String, String> tuple2 = new Tuple2<String, String>(orig._1()._1(), "<"+ orig._1()._2() +", " + orig._2().toString() + ">");
-//                return tuple2;
-//            }
-//        }); //now in <ContextW, "<QueryW Int>"
-
         //Now we are trying to make it so that there is only one Key (the Context Word), but we want to make a map of Tuples for the Value, that contain the qword and count for it
         //this will help when we need to sort it later
 
@@ -105,8 +94,6 @@ public class WordAnalysis {
             }
         });
 
-        //kv = kv.sortByKey(true);
-
         //now we will reduce, this will make it so that each context word has only one treemap of querywords and counts (basically just combining treemaps for each key)
         kv = kv.reduceByKey(new Function2<TreeMap<String, Integer>, TreeMap<String, Integer>, TreeMap<String, Integer>>(){
             @Override
@@ -114,14 +101,14 @@ public class WordAnalysis {
 
                 Set<String> s2Keys = s2.keySet();
                 for(String key: s2Keys){
-//                    if(s.containsKey(key)){
-//                        int count = s.get(key);
-//                        count += s2.get(key);
-//                        s.replace(key, count);
-//                    }
-                    //else{
+                    if(s.containsKey(key)){ //dont need this conditional, but just in case
+                        int count = s.get(key);
+                        count += s2.get(key);
+                        s.replace(key, count);
+                    }
+                    else{
                         s.put(key, s2.get(key));
-                   // }
+                    }
                 }
                 return s;
             }
@@ -147,18 +134,7 @@ public class WordAnalysis {
                 return a;
             }
         }, true, 1);
-        resultStr.saveAsTextFile("bbbbbbbbbbbbb.txt");
-//        int i = 1;
-//        splitLines.foreach(new VoidFunction<String[]>(){
-//            public void call(String[] line) {
-//                if (line == null){
-//                    r3eturn;
-//                }
-//                for(String s :line) {
-//                    System.out.print(s + " ");
-//                }
-//                System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-//            }});
+        resultStr.saveAsTextFile(args[1]); //outputs to this directory
 
     }
 }
