@@ -1,14 +1,10 @@
 # Educational Material
 
-Included in this readme is background information on how to install and use Docker.
+Included is background information on how to install and use Docker. Also an example for creating and running a simple Docker container are included.
 
 ## Install Docker on your machine
 
-Mac OS
-
 ![Mac OS](https://docs.docker.com/docker-for-mac/install/)
-
-Windows
 
 ![Windows](https://docs.docker.com/docker-for-windows/install/)
 
@@ -22,22 +18,81 @@ With Docker one can build containers by using Docker's library of open source Do
 
 ### FROM
 
+> FROM <image>
+
+This instruction sets a base image for the container image one is building with their Dockerfile. It must be the first non-comment instruction in the Dockerfile.
+
+![Docker documentation on FROM](https://docs.docker.com/engine/reference/builder/#from)
+
 ### COPY
+
+> COPY <src> <dest>
+
+The COPY instruction copies new files or directories from <src> and adds them to the filesystem of the container from this Dockerfile built image.
+
+![Docker documentation on COPY](https://docs.docker.com/engine/reference/builder/#copy)
 
 ### RUN
 
+> RUN <command>
+
+The RUN instruction will execute any commands in a new layer on top of the current image and commit the results. The resulting  committed image will be used for the next step in the Dockerfile.
+
+![Docker documentation on RUN](https://docs.docker.com/engine/reference/builder/#run)
+
 ### CMD
 
-There are only a few Docker commands one needs to be familiar with to use their first Docker container.
+> CMD command param1 param2
+  CMD ["command", "param1", "param2"]
+
+The CMD instruction is used to provide defaults for an executing container. These defaults can include an executable or they can omit an executable.
+
+![Docker documentation on CMD](https://docs.docker.com/engine/reference/builder/#cmd)
+
+
+### Dockerfile Example
+
+```Dockerfile
+  FROM ubuntu
+  RUN apt-get update
+  COPY . /my_files
+  CMD ["sleep", "infinity"]
+```
+
+> The Dockerfile above builds from the Docker Hub ubuntu image, runs the ```apt-get update``` command, copies all the contents of the current directory into a directory called **my_files** in the container, and sets the default command to ```sleep infinity```.
+
+This section describes how to build your container image from the Dockerfile above, run the container, and work inside the container. There are only a few Docker commands one needs to be familiar with to use their first Docker container.
 
 ### docker build
 
+> docker build -t my-first-container-image .
+
+The above command builds an image from a Dockerfile in the current directory you are in (run the command while in the directory where the Dockerfile is OR give the path to the directory where your Dockerfile is located). The **-t** flag allows you to name this image, and in this case we named it **my-first-container**.
+
+![Docker documentation on docker build](https://docs.docker.com/engine/reference/commandline/build/)
+
 ### docker run
+
+> docker run -d --name my-first-container-name
+
+The above command starts a container from the image built from the previous ```docker build``` command. It names it **my-first-container-name**.
+
+![Docker documentation on docker run](https://docs.docker.com/engine/reference/commandline/run/)
 
 ### docker exec
 
-### docker start
+> docker exec -it my-first-container-name bash
 
-### docker stop
+The above command starts an interactive session within the container using the bash application (shell).
 
-Example for creating your first docker container.
+![Docker documentation on docker exec](https://docs.docker.com/engine/reference/commandline/exec/)
+
+### Other Helpful Docker Links
+
+![Docker Hub](https://hub.docker.com/)
+
+![Dockerfile Best Practices](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/)
+
+![Dockerfile Reference](https://docs.docker.com/engine/reference/builder/)
+
+## Working with Hadoop and Spark in Docker containers
