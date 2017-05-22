@@ -9,7 +9,8 @@ jar -cvf $class.jar -C build/ .
 $HADOOP_PREFIX/bin/hdfs dfs -rm -r output || echo "No Output"
 rm -rf output
 
-$HADOOP_PREFIX/bin/hadoop jar $class.jar $class input output
+time $HADOOP_PREFIX/bin/hadoop jar $class.jar $class input output
 $HADOOP_PREFIX/bin/hdfs dfs -get output output
 
-cat output/part-r-*
+# cat output/part-r-*
+echo "done"
